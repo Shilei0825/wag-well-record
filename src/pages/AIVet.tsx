@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePets } from '@/hooks/usePets';
+import { useCreateConsultation } from '@/hooks/useAIVetConsultations';
 import { BottomNav } from '@/components/BottomNav';
 import { AIVetIntakeForm } from '@/components/AIVetIntakeForm';
 import { AIVetMessage } from '@/components/AIVetMessage';
@@ -18,7 +19,7 @@ interface Message {
   content: string;
 }
 
-interface IntakeData {
+export interface IntakeData {
   mainSymptom: string;
   duration: string;
   severity: string;
@@ -69,12 +70,15 @@ export default function AIVet() {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const { data: pets } = usePets();
+  const createConsultation = useCreateConsultation();
   
   const [viewMode, setViewMode] = useState<ViewMode>('intake');
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPetId, setSelectedPetId] = useState<string>('');
+  const [currentIntakeData, setCurrentIntakeData] = useState<IntakeData | null>(null);
+  const [hasBeenSaved, setHasBeenSaved] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -141,10 +145,12 @@ export default function AIVet() {
 
   const handleIntakeSubmit = (data: IntakeData) => {
     const intakeMessage = buildIntakeMessage(data);
+    setCurrentIntakeData(data);
+    setHasBeenSaved(false);
     setViewMode('chat');
     // Send the message automatically
     setTimeout(() => {
-      sendMessageWithContent(intakeMessage);
+      sendMessageWithContent(intakeMessage, data);
     }, 100);
   };
 
@@ -156,9 +162,52 @@ export default function AIVet() {
     setViewMode('intake');
     setMessages([]);
     setInput('');
+    setCurrentIntakeData(null);
+    setHasBeenSaved(false);
   };
 
-  const sendMessageWithContent = async (content: string) => {
+  // Extract urgency level from AI response
+  const extractUrgencyLevel = (response: string): string | undefined => {
+    // Look for common patterns in the response
+    const patterns = [
+      /紧急程度[：:]\s*\n*\s*(紧急|24小时内就医|24小时内|可观察|观察)/,
+      /Urgency Level[：:]\s*\n*\s*(Emergency|Within 24 hours|Monitor)/i,
+      /🚨\s*紧急程度\s*\n+(紧急|24小时内就医|24小时内|可观察|观察)/,
+      /🚨\s*Urgency Level\s*\n+(Emergency|Within 24 hours|Monitor)/i,
+    ];
+    
+    for (const pattern of patterns) {
+      const match = response.match(pattern);
+      if (match) return match[1];
+    }
+    return undefined;
+  };
+
+  // Save consultation to database
+  const saveConsultation = async (intakeData: IntakeData, fullResponse: string) => {
+    if (!selectedPetId || hasBeenSaved) return;
+    
+    try {
+      const urgencyLevel = extractUrgencyLevel(fullResponse);
+      
+      await createConsultation.mutateAsync({
+        pet_id: selectedPetId,
+        main_symptom: intakeData.mainSymptom,
+        duration: intakeData.duration,
+        severity: intakeData.severity,
+        additional_symptoms: intakeData.additionalSymptoms,
+        additional_notes: intakeData.additionalNotes || undefined,
+        urgency_level: urgencyLevel,
+        full_response: fullResponse,
+      });
+      
+      setHasBeenSaved(true);
+    } catch (error) {
+      console.error('Failed to save consultation:', error);
+    }
+  };
+
+  const sendMessageWithContent = async (content: string, intakeData?: IntakeData) => {
     if (!content.trim() || isLoading) return;
 
     const userMsg: Message = { role: 'user', content: content.trim() };
@@ -273,6 +322,11 @@ export default function AIVet() {
             }
           } catch { /* ignore */ }
         }
+      }
+      
+      // Save consultation if this was from intake form
+      if (intakeData && assistantContent) {
+        saveConsultation(intakeData, assistantContent);
       }
     } catch (e) {
       console.error('AI Vet error:', e);
