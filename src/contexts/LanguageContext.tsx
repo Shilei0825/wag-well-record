@@ -122,7 +122,7 @@ const translations: Translations = {
   
   // AI Vet
   'aivet.title': { zh: '宠博士', en: 'AI Vet' },
-  'aivet.selectPet': { zh: '选择宠物（可选）', en: 'Select pet (optional)' },
+  'aivet.selectPet': { zh: '选择宠物', en: 'Select pet' },
   'aivet.welcome': { zh: '你好，我是宠博士！', en: "Hi, I'm Pet Doctor!" },
   'aivet.welcomeDesc': { zh: '描述您宠物的症状，我会帮您评估紧急程度并准备就诊建议。请注意：我不是兽医，无法做出诊断。', en: "Describe your pet's symptoms and I'll help assess urgency and prepare vet visit suggestions. Note: I'm not a veterinarian and cannot diagnose." },
   'aivet.inputPlaceholder': { zh: '描述宠物的症状...', en: "Describe your pet's symptoms..." },
