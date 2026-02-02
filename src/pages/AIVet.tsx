@@ -319,10 +319,13 @@ export default function AIVet() {
       </div>
 
       <div className="max-w-lg mx-auto">
-        {/* Pet Selector - Always visible */}
+        {/* Pet Selector - Required */}
         <div className="p-4 border-b">
+          <label className="text-sm font-medium mb-2 block">
+            {language === 'zh' ? '选择宠物 *' : 'Select Pet *'}
+          </label>
           <Select value={selectedPetId} onValueChange={setSelectedPetId}>
-            <SelectTrigger>
+            <SelectTrigger className={!selectedPetId ? 'border-destructive/50' : ''}>
               <SelectValue placeholder={t('aivet.selectPet')} />
             </SelectTrigger>
             <SelectContent>
@@ -333,9 +336,27 @@ export default function AIVet() {
               ))}
             </SelectContent>
           </Select>
+          {!selectedPetId && (
+            <p className="text-xs text-muted-foreground mt-1">
+              {language === 'zh' ? '请先选择要咨询的宠物' : 'Please select a pet first'}
+            </p>
+        )}
         </div>
 
-        {viewMode === 'intake' ? (
+        {!selectedPetId ? (
+          /* Show prompt to select pet */
+          <div className="p-8 text-center">
+            <Stethoscope className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+            <h3 className="font-medium mb-2">
+              {language === 'zh' ? '请先选择宠物' : 'Please select a pet first'}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {language === 'zh' 
+                ? '选择宠物后，宠博士可以根据宠物的信息提供更准确的建议' 
+                : 'After selecting a pet, AI Vet can provide more accurate suggestions based on pet info'}
+            </p>
+          </div>
+        ) : viewMode === 'intake' ? (
           /* Intake Form */
           <div className="p-4">
             <div className="mb-4">
