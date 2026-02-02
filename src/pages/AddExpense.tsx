@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCreateExpense } from '@/hooks/useExpenses';
 import { PageHeader } from '@/components/PageHeader';
+import { DocumentScanner } from '@/components/DocumentScanner';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -52,11 +53,26 @@ export default function AddExpense() {
     }
   };
 
+  const handleScanComplete = (data: any) => {
+    if (data.category && ['medical', 'food', 'supplies', 'other'].includes(data.category)) {
+      setCategory(data.category);
+    }
+    if (data.date) setDate(data.date);
+    if (data.amount) setAmount(String(data.amount));
+    if (data.merchant) setMerchant(data.merchant);
+    if (data.notes) setNotes(data.notes);
+  };
+
   return (
     <div className="page-container pb-6">
       <PageHeader title={t('expense.add')} showBack />
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Document Scanner */}
+        <DocumentScanner 
+          documentType="expense" 
+          onScanComplete={handleScanComplete} 
+        />
         {/* Category Selection */}
         <div className="space-y-2">
           <Label>{t('expense.category')}</Label>

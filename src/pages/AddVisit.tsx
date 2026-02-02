@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCreateVisit } from '@/hooks/useVisits';
 import { PageHeader } from '@/components/PageHeader';
+import { DocumentScanner } from '@/components/DocumentScanner';
 import { toast } from 'sonner';
 
 export default function AddVisit() {
@@ -47,11 +48,26 @@ export default function AddVisit() {
     }
   };
 
+  const handleScanComplete = (data: any) => {
+    if (data.visitDate) setVisitDate(data.visitDate);
+    if (data.clinicName) setClinicName(data.clinicName);
+    if (data.reason) setReason(data.reason);
+    if (data.diagnosis) setDiagnosis(data.diagnosis);
+    if (data.treatment) setTreatment(data.treatment);
+    if (data.totalCost) setTotalCost(String(data.totalCost));
+    if (data.notes) setNotes(data.notes);
+  };
+
   return (
     <div className="page-container pb-6">
       <PageHeader title={t('visit.add')} showBack />
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Document Scanner */}
+        <DocumentScanner 
+          documentType="visit" 
+          onScanComplete={handleScanComplete} 
+        />
         {/* Visit Date */}
         <div className="space-y-2">
           <Label htmlFor="visitDate">{t('visit.date')} *</Label>

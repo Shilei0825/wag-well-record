@@ -9,6 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useCreateHealthRecord } from '@/hooks/useHealthRecords';
 import { useCreateReminder } from '@/hooks/useReminders';
 import { PageHeader } from '@/components/PageHeader';
+import { DocumentScanner } from '@/components/DocumentScanner';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -64,11 +65,26 @@ export default function AddHealthRecord() {
     }
   };
 
+  const handleScanComplete = (data: any) => {
+    if (data.type && ['vaccine', 'deworming', 'medication'].includes(data.type)) {
+      setType(data.type);
+    }
+    if (data.name) setName(data.name);
+    if (data.date) setDate(data.date);
+    if (data.nextDueDate) setNextDueDate(data.nextDueDate);
+    if (data.notes) setNotes(data.notes);
+  };
+
   return (
     <div className="page-container pb-6">
       <PageHeader title={t('health.add')} showBack />
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Document Scanner */}
+        <DocumentScanner 
+          documentType="health_record" 
+          onScanComplete={handleScanComplete} 
+        />
         {/* Type Selection */}
         <div className="space-y-2">
           <Label>{t('health.type')}</Label>
