@@ -9,6 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { usePets } from '@/hooks/usePets';
 import { BottomNav } from '@/components/BottomNav';
 import { AIVetIntakeForm } from '@/components/AIVetIntakeForm';
+import { AIVetMessage } from '@/components/AIVetMessage';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 
@@ -181,11 +182,12 @@ export default function AIVet() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ 
-          messages: [...messages, userMsg],
-          petInfo,
-        }),
-      });
+      body: JSON.stringify({ 
+        messages: [...messages, userMsg],
+        petInfo,
+        language,
+      }),
+    });
 
       if (resp.status === 429) {
         toast.error(language === 'zh' ? '请求过于频繁，请稍后再试' : 'Rate limited, please try again later');
@@ -377,9 +379,7 @@ export default function AIVet() {
                       : 'bg-muted'
                   }`}>
                     {msg.role === 'assistant' ? (
-                      <div className="prose prose-sm dark:prose-invert max-w-none">
-                        <ReactMarkdown>{msg.content || '...'}</ReactMarkdown>
-                      </div>
+                      <AIVetMessage content={msg.content || '...'} />
                     ) : (
                       <div className="text-sm whitespace-pre-wrap">
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
