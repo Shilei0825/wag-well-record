@@ -19,6 +19,7 @@ const translations: Translations = {
   'nav.pets': { zh: '宠物', en: 'Pets' },
   'nav.insights': { zh: '统计', en: 'Insights' },
   'nav.settings': { zh: '设置', en: 'Settings' },
+  'nav.aivet': { zh: '宠博士', en: 'AI Vet' },
   
   // Auth
   'auth.login': { zh: '登录', en: 'Login' },
@@ -118,6 +119,14 @@ const translations: Translations = {
   'membership.premium': { zh: '高级版', en: 'Premium' },
   'membership.notify': { zh: '上线通知', en: 'Notify Me' },
   'membership.comingSoon': { zh: '即将推出', en: 'Coming Soon' },
+  
+  // AI Vet
+  'aivet.title': { zh: '宠博士', en: 'AI Vet' },
+  'aivet.selectPet': { zh: '选择宠物（可选）', en: 'Select pet (optional)' },
+  'aivet.welcome': { zh: '你好，我是宠博士！', en: "Hi, I'm Pet Doctor!" },
+  'aivet.welcomeDesc': { zh: '描述您宠物的症状，我会帮您评估紧急程度并准备就诊建议。请注意：我不是兽医，无法做出诊断。', en: "Describe your pet's symptoms and I'll help assess urgency and prepare vet visit suggestions. Note: I'm not a veterinarian and cannot diagnose." },
+  'aivet.inputPlaceholder': { zh: '描述宠物的症状...', en: "Describe your pet's symptoms..." },
+  'aivet.disclaimer': { zh: '仅供参考，不构成医疗建议', en: 'For reference only, not medical advice' },
   
   // Common
   'common.save': { zh: '保存', en: 'Save' },

@@ -25,6 +25,7 @@ import AddReminder from "./pages/AddReminder";
 import Insights from "./pages/Insights";
 import Settings from "./pages/Settings";
 import Membership from "./pages/Membership";
+import AIVet from "./pages/AIVet";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -89,6 +90,7 @@ function AppRoutes() {
       <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       <Route path="/membership" element={<ProtectedRoute><Membership /></ProtectedRoute>} />
+      <Route path="/ai-vet" element={<ProtectedRoute><AIVet /></ProtectedRoute>} />
 
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />
