@@ -1,9 +1,13 @@
-import { Receipt, Stethoscope, UtensilsCrossed, Package, MoreHorizontal, TrendingUp } from 'lucide-react';
+import { Receipt, Stethoscope, UtensilsCrossed, Package, MoreHorizontal, TrendingUp, Bot, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAllExpenses } from '@/hooks/useExpenses';
 import { useAllVisits } from '@/hooks/useVisits';
+import { useAIVetConsultations } from '@/hooks/useAIVetConsultations';
 import { PageHeader } from '@/components/PageHeader';
 import { BottomNav } from '@/components/BottomNav';
+import { AIVetHistoryCard } from '@/components/AIVetHistoryCard';
+import { Button } from '@/components/ui/button';
 import { startOfMonth, parseISO, isAfter, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -15,9 +19,11 @@ const categoryConfig = {
 };
 
 export default function Insights() {
+  const navigate = useNavigate();
   const { t, language } = useLanguage();
   const { data: expenses, isLoading: expensesLoading } = useAllExpenses();
   const { data: visits, isLoading: visitsLoading } = useAllVisits();
+  const { data: consultations, isLoading: consultationsLoading } = useAIVetConsultations();
 
   const monthStart = startOfMonth(new Date());
 
@@ -37,7 +43,10 @@ export default function Insights() {
   // Recent visits (last 30 days)
   const recentVisits = visits?.slice(0, 5) || [];
 
-  const isLoading = expensesLoading || visitsLoading;
+  // Recent AI Vet consultations
+  const recentConsultations = consultations?.slice(0, 5) || [];
+
+  const isLoading = expensesLoading || visitsLoading || consultationsLoading;
 
   return (
     <div className="page-container">
@@ -55,6 +64,43 @@ export default function Insights() {
             <p className="text-sm text-muted-foreground mb-1">{t('expense.thisMonth')}</p>
             <p className="text-3xl font-bold text-foreground">¥{monthlyExpenses.toFixed(0)}</p>
           </div>
+
+          {/* AI Vet Consultations */}
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="section-title mb-0 flex items-center gap-2">
+                <Bot className="h-4 w-4 text-primary" />
+                {language === 'zh' ? '宠博士咨询记录' : 'AI Vet Consultations'}
+              </h2>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => navigate('/ai-vet')}
+                className="text-primary"
+              >
+                {language === 'zh' ? '新咨询' : 'New'}
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+            
+            {recentConsultations.length > 0 ? (
+              <div className="space-y-3">
+                {recentConsultations.map((consultation) => (
+                  <AIVetHistoryCard key={consultation.id} consultation={consultation} />
+                ))}
+              </div>
+            ) : (
+              <div className="card-elevated p-6 text-center">
+                <Bot className="h-10 w-10 mx-auto mb-3 text-muted-foreground/50" />
+                <p className="text-muted-foreground mb-3">
+                  {language === 'zh' ? '暂无咨询记录' : 'No consultations yet'}
+                </p>
+                <Button variant="outline" size="sm" onClick={() => navigate('/ai-vet')}>
+                  {language === 'zh' ? '开始首次咨询' : 'Start first consultation'}
+                </Button>
+              </div>
+            )}
+          </section>
 
           {/* Expenses by Category */}
           <section>

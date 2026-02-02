@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_vet_consultations: {
+        Row: {
+          additional_notes: string | null
+          additional_symptoms: string[] | null
+          created_at: string
+          duration: string
+          full_response: string | null
+          id: string
+          main_symptom: string
+          pet_id: string
+          severity: string
+          summary: string | null
+          urgency_level: string | null
+          user_id: string
+        }
+        Insert: {
+          additional_notes?: string | null
+          additional_symptoms?: string[] | null
+          created_at?: string
+          duration: string
+          full_response?: string | null
+          id?: string
+          main_symptom: string
+          pet_id: string
+          severity: string
+          summary?: string | null
+          urgency_level?: string | null
+          user_id: string
+        }
+        Update: {
+          additional_notes?: string | null
+          additional_symptoms?: string[] | null
+          created_at?: string
+          duration?: string
+          full_response?: string | null
+          id?: string
+          main_symptom?: string
+          pet_id?: string
+          severity?: string
+          summary?: string | null
+          urgency_level?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_vet_consultations_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expenses: {
         Row: {
           amount: number
