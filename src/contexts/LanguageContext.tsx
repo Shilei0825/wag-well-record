@@ -144,6 +144,10 @@ const translations: Translations = {
   'common.lastVisit': { zh: '最近就诊', en: 'Last Visit' },
   'common.quickActions': { zh: '快捷操作', en: 'Quick Actions' },
   'common.recentActivity': { zh: '最近动态', en: 'Recent Activity' },
+  
+  // Scan
+  'scan.tapToScan': { zh: '点击扫描单据', en: 'Tap to scan document' },
+  'scan.autoFill': { zh: '自动识别并填写表单', en: 'Auto-fill form from image' },
 };
 
 interface LanguageContextType {
