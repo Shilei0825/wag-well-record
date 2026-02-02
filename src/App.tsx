@@ -27,6 +27,7 @@ import Settings from "./pages/Settings";
 import Membership from "./pages/Membership";
 import AIVet from "./pages/AIVet";
 import NotFound from "./pages/NotFound";
+import { FloatingAIVetBubble } from "./components/FloatingAIVetBubble";
 
 const queryClient = new QueryClient();
 
@@ -107,6 +108,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <AppRoutes />
+            <FloatingAIVetBubble />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
