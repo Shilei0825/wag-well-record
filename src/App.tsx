@@ -27,7 +27,6 @@ import Settings from "./pages/Settings";
 import Membership from "./pages/Membership";
 import TreatmentCodes from "./pages/TreatmentCodes";
 import AIVet from "./pages/AIVet";
-import Tasks from "./pages/Tasks";
 import NotFound from "./pages/NotFound";
 import { FloatingAIVetBubble } from "./components/FloatingAIVetBubble";
 
@@ -95,7 +94,6 @@ function AppRoutes() {
       <Route path="/membership" element={<ProtectedRoute><Membership /></ProtectedRoute>} />
       <Route path="/treatment-codes" element={<ProtectedRoute><TreatmentCodes /></ProtectedRoute>} />
       <Route path="/ai-vet" element={<ProtectedRoute><AIVet /></ProtectedRoute>} />
-      <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
 
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />
