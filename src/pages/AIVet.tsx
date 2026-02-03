@@ -100,12 +100,37 @@ export default function AIVet() {
     if (!birthdate) return null;
     const birth = new Date(birthdate);
     const now = new Date();
-    const years = now.getFullYear() - birth.getFullYear();
-    const months = now.getMonth() - birth.getMonth();
-    if (years > 0) {
-      return language === 'zh' ? `${years}岁` : `${years} years`;
+    
+    let years = now.getFullYear() - birth.getFullYear();
+    let months = now.getMonth() - birth.getMonth();
+    
+    // Adjust for negative months
+    if (months < 0) {
+      years--;
+      months += 12;
     }
-    return language === 'zh' ? `${months}个月` : `${months} months`;
+    
+    // Adjust if day hasn't passed yet this month
+    if (now.getDate() < birth.getDate()) {
+      months--;
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+    }
+    
+    if (years > 0 && months > 0) {
+      return language === 'zh' 
+        ? `${years}岁${months}个月` 
+        : `${years} year${years > 1 ? 's' : ''} ${months} month${months > 1 ? 's' : ''}`;
+    }
+    if (years > 0) {
+      return language === 'zh' ? `${years}岁` : `${years} year${years > 1 ? 's' : ''}`;
+    }
+    if (months > 0) {
+      return language === 'zh' ? `${months}个月` : `${months} month${months > 1 ? 's' : ''}`;
+    }
+    return language === 'zh' ? '不到1个月' : 'Less than 1 month';
   };
 
   // Build initial message from intake form

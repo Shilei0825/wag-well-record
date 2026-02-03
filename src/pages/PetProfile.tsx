@@ -36,9 +36,31 @@ export default function PetProfile() {
   const getAge = () => {
     if (!pet?.birthdate) return null;
     const birth = new Date(pet.birthdate);
-    const years = now.getFullYear() - birth.getFullYear();
-    const months = now.getMonth() - birth.getMonth();
+    const now = new Date();
     
+    let years = now.getFullYear() - birth.getFullYear();
+    let months = now.getMonth() - birth.getMonth();
+    
+    // Adjust for negative months
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+    
+    // Adjust if day hasn't passed yet this month
+    if (now.getDate() < birth.getDate()) {
+      months--;
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+    }
+    
+    if (years > 0 && months > 0) {
+      return language === 'zh' 
+        ? `${years}岁${months}个月` 
+        : `${years} year${years > 1 ? 's' : ''} ${months} month${months > 1 ? 's' : ''}`;
+    }
     if (years > 0) {
       return language === 'zh' ? `${years}岁` : `${years} year${years > 1 ? 's' : ''}`;
     }
