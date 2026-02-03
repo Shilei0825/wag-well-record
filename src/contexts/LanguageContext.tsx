@@ -109,6 +109,8 @@ const translations: Translations = {
   'settings.title': { zh: '设置', en: 'Settings' },
   'settings.account': { zh: '账号信息', en: 'Account' },
   'settings.language': { zh: '语言', en: 'Language' },
+  'settings.treatmentCodes': { zh: '治疗项目查询', en: 'Treatment Codes' },
+  'settings.treatmentCodesDesc': { zh: '查看治疗代码和预估费用', en: 'View treatment codes and cost estimates' },
   'settings.feedback': { zh: '意见反馈', en: 'Feedback' },
   'settings.privacy': { zh: '隐私政策', en: 'Privacy Policy' },
   'settings.terms': { zh: '服务条款', en: 'Terms of Service' },
