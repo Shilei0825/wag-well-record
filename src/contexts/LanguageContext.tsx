@@ -17,6 +17,7 @@ const translations: Translations = {
   // Navigation
   'nav.home': { zh: '首页', en: 'Home' },
   'nav.pets': { zh: '宠物', en: 'Pets' },
+  'nav.tasks': { zh: '任务', en: 'Tasks' },
   'nav.insights': { zh: '统计', en: 'Insights' },
   'nav.settings': { zh: '设置', en: 'Settings' },
   'nav.aivet': { zh: '宠博士', en: 'AI Vet' },
