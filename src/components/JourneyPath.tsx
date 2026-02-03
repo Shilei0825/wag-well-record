@@ -2,14 +2,15 @@ import { useMonthlyCheckIns } from '@/hooks/useCheckIns';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Bone, Fish } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface JourneyPathProps {
   petId?: string;
+  species?: string;
 }
 
-export function JourneyPath({ petId }: JourneyPathProps) {
+export function JourneyPath({ petId, species = 'dog' }: JourneyPathProps) {
   const { language } = useLanguage();
   const [currentDate, setCurrentDate] = useState(new Date());
   
@@ -156,7 +157,11 @@ export function JourneyPath({ petId }: JourneyPathProps) {
                 `}
               >
                 {isChecked ? (
-                  <PawIcon className="w-4 h-4" />
+                  species === 'dog' ? (
+                    <Bone className="w-4 h-4" />
+                  ) : (
+                    <Fish className="w-4 h-4" />
+                  )
                 ) : (
                   <span>{day}</span>
                 )}
@@ -170,7 +175,11 @@ export function JourneyPath({ petId }: JourneyPathProps) {
       <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
         <div className="flex items-center gap-1">
           <div className="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
-            <PawIcon className="w-2.5 h-2.5 text-primary-foreground" />
+            {species === 'dog' ? (
+              <Bone className="w-2.5 h-2.5 text-primary-foreground" />
+            ) : (
+              <Fish className="w-2.5 h-2.5 text-primary-foreground" />
+            )}
           </div>
           <span>{language === 'zh' ? '已打卡' : 'Checked'}</span>
         </div>
