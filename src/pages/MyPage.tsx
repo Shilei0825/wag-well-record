@@ -201,7 +201,7 @@ export default function MyPage() {
               {language === 'zh' ? '打卡足迹' : 'Check-in Journey'}
             </h2>
           </div>
-          <JourneyPath petId={selectedPet.id} />
+          <JourneyPath petId={selectedPet.id} species={selectedPet.species} />
         </div>
       )}
 

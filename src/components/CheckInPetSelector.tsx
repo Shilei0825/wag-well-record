@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Check, Bone, Fish } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -55,12 +55,8 @@ export function CheckInPetSelector({
             <div className="relative">
               <Avatar className="h-12 w-12 border-2 border-background">
                 <AvatarImage src={pet.avatar_url || undefined} alt={pet.name} />
-                <AvatarFallback className="bg-primary/20">
-                  {pet.species === 'dog' ? (
-                    <Bone className="h-5 w-5 text-primary" />
-                  ) : (
-                    <Fish className="h-5 w-5 text-primary" />
-                  )}
+                <AvatarFallback className="bg-primary/20 text-lg">
+                  {pet.species === 'dog' ? '🐕' : '🐱'}
                 </AvatarFallback>
               </Avatar>
               
