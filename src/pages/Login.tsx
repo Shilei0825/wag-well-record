@@ -9,16 +9,20 @@ import { useAuth } from '@/contexts/AuthContext';
 import { PageHeader } from '@/components/PageHeader';
 import { PhoneInput } from '@/components/PhoneInput';
 import { toast } from 'sonner';
-import { Mail, Phone } from 'lucide-react';
+import { Mail, Phone, Wand2, Lock } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
   const { t, language, setLanguage } = useLanguage();
-  const { signIn, signInWithPhone, verifyOtp } = useAuth();
+  const { signIn, signInWithMagicLink, signInWithPhone, verifyOtp } = useAuth();
   
   // Email login state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
+  // Magic link state
+  const [magicEmail, setMagicEmail] = useState('');
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
   
   // Phone login state
   const [phone, setPhone] = useState('');
@@ -41,6 +45,32 @@ export default function Login() {
     }
 
     navigate('/dashboard');
+  };
+
+  const handleMagicLinkSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!magicEmail) {
+      toast.error(language === 'zh' ? '请输入邮箱地址' : 'Please enter your email');
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await signInWithMagicLink(magicEmail);
+    
+    if (error) {
+      toast.error(error.message);
+      setLoading(false);
+      return;
+    }
+
+    setMagicLinkSent(true);
+    setLoading(false);
+    toast.success(
+      language === 'zh' 
+        ? '登录链接已发送到您的邮箱' 
+        : 'Magic link sent to your email'
+    );
   };
 
   const handleSendOtp = async () => {
@@ -116,17 +146,84 @@ export default function Login() {
 
       <PageHeader title={t('auth.welcome')} showBack />
 
-      <Tabs defaultValue="email" className="mt-8">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
-          <TabsTrigger value="email" className="flex items-center gap-2">
-            <Mail className="h-4 w-4" />
-            {language === 'zh' ? '邮箱登录' : 'Email'}
+      <Tabs defaultValue="magic" className="mt-8">
+        <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsTrigger value="magic" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Wand2 className="h-4 w-4" />
+            <span className="hidden sm:inline">{language === 'zh' ? '快捷登录' : 'Magic Link'}</span>
+            <span className="sm:hidden">{language === 'zh' ? '快捷' : 'Magic'}</span>
           </TabsTrigger>
-          <TabsTrigger value="phone" className="flex items-center gap-2">
+          <TabsTrigger value="email" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Lock className="h-4 w-4" />
+            <span className="hidden sm:inline">{language === 'zh' ? '密码登录' : 'Password'}</span>
+            <span className="sm:hidden">{language === 'zh' ? '密码' : 'Pass'}</span>
+          </TabsTrigger>
+          <TabsTrigger value="phone" className="flex items-center gap-1 text-xs sm:text-sm">
             <Phone className="h-4 w-4" />
-            {language === 'zh' ? '手机登录' : 'Phone'}
+            <span className="hidden sm:inline">{language === 'zh' ? '手机登录' : 'Phone'}</span>
+            <span className="sm:hidden">{language === 'zh' ? '手机' : 'SMS'}</span>
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="magic">
+          <form onSubmit={handleMagicLinkSubmit} className="space-y-6">
+            {magicLinkSent ? (
+              <div className="text-center space-y-4 py-8">
+                <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                  <Mail className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold">
+                  {language === 'zh' ? '查看您的邮箱' : 'Check your email'}
+                </h3>
+                <p className="text-muted-foreground text-sm">
+                  {language === 'zh' 
+                    ? `我们已向 ${magicEmail} 发送了登录链接` 
+                    : `We sent a login link to ${magicEmail}`}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setMagicLinkSent(false)}
+                  className="mt-4"
+                >
+                  {language === 'zh' ? '使用其他邮箱' : 'Use a different email'}
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="magic-email">{t('auth.email')}</Label>
+                  <Input
+                    id="magic-email"
+                    type="email"
+                    value={magicEmail}
+                    onChange={(e) => setMagicEmail(e.target.value)}
+                    required
+                    className="input-mobile"
+                    placeholder="your@email.com"
+                  />
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  {language === 'zh' 
+                    ? '我们将发送一个登录链接到您的邮箱，点击即可登录，无需密码。'
+                    : "We'll send a login link to your email. Click to sign in - no password needed."}
+                </p>
+
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full btn-mobile"
+                >
+                  {loading 
+                    ? t('common.loading') 
+                    : (language === 'zh' ? '发送登录链接' : 'Send Magic Link')
+                  }
+                </Button>
+              </>
+            )}
+          </form>
+        </TabsContent>
 
         <TabsContent value="email">
           <form onSubmit={handleEmailSubmit} className="space-y-6">
