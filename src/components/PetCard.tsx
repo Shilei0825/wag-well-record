@@ -10,22 +10,43 @@ interface PetCardProps {
 
 export function PetCard({ pet }: PetCardProps) {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const getAge = () => {
     if (!pet.birthdate) return null;
     const birth = new Date(pet.birthdate);
     const now = new Date();
-    const years = now.getFullYear() - birth.getFullYear();
-    const months = now.getMonth() - birth.getMonth();
     
+    let years = now.getFullYear() - birth.getFullYear();
+    let months = now.getMonth() - birth.getMonth();
+    
+    // Adjust for negative months
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+    
+    // Adjust if day hasn't passed yet this month
+    if (now.getDate() < birth.getDate()) {
+      months--;
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+    }
+    
+    if (years > 0 && months > 0) {
+      return language === 'zh' 
+        ? `${years}岁${months}个月` 
+        : `${years}y ${months}m`;
+    }
     if (years > 0) {
-      return `${years} ${years === 1 ? 'year' : 'years'}`;
+      return language === 'zh' ? `${years}岁` : `${years}y`;
     }
     if (months > 0) {
-      return `${months} ${months === 1 ? 'month' : 'months'}`;
+      return language === 'zh' ? `${months}个月` : `${months}m`;
     }
-    return null;
+    return language === 'zh' ? '<1月' : '<1m';
   };
 
   return (
