@@ -135,10 +135,15 @@ export default function PetProfile() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          {getAge() && (
+          {pet.birthdate && (
             <div className="flex items-center gap-2 text-sm">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-foreground">{getAge()}</span>
+              <div className="flex flex-col">
+                <span className="text-foreground">{getAge()}</span>
+                <span className="text-xs text-muted-foreground">
+                  {format(parseISO(pet.birthdate), 'yyyy-MM-dd')}
+                </span>
+              </div>
             </div>
           )}
           {pet.weight && (
