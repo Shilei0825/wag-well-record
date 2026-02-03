@@ -353,7 +353,7 @@ export default function AIVet() {
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col">
+    <div className="h-screen bg-background flex flex-col pb-16">
       {/* Header */}
       <div className="flex-shrink-0 z-10 bg-background border-b">
         <div className="flex items-center justify-between p-4 max-w-lg mx-auto">
