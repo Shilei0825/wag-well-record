@@ -1,4 +1,4 @@
-import { Home, PawPrint, BarChart3, Settings } from 'lucide-react';
+import { Home, PawPrint, BarChart3, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
@@ -7,7 +7,7 @@ const navItems = [
   { path: '/dashboard', icon: Home, labelKey: 'nav.home' },
   { path: '/pets', icon: PawPrint, labelKey: 'nav.pets' },
   { path: '/insights', icon: BarChart3, labelKey: 'nav.insights' },
-  { path: '/settings', icon: Settings, labelKey: 'nav.settings' },
+  { path: '/my', icon: User, labelKey: 'nav.my' },
 ];
 
 export function BottomNav() {

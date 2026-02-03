@@ -24,6 +24,7 @@ import Reminders from "./pages/Reminders";
 import AddReminder from "./pages/AddReminder";
 import Insights from "./pages/Insights";
 import Settings from "./pages/Settings";
+import MyPage from "./pages/MyPage";
 import Membership from "./pages/Membership";
 import TreatmentCodes from "./pages/TreatmentCodes";
 import AIVet from "./pages/AIVet";
@@ -90,6 +91,7 @@ function AppRoutes() {
       <Route path="/reminders" element={<ProtectedRoute><Reminders /></ProtectedRoute>} />
       <Route path="/reminder/new" element={<ProtectedRoute><AddReminder /></ProtectedRoute>} />
       <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
+      <Route path="/my" element={<ProtectedRoute><MyPage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       <Route path="/membership" element={<ProtectedRoute><Membership /></ProtectedRoute>} />
       <Route path="/treatment-codes" element={<ProtectedRoute><TreatmentCodes /></ProtectedRoute>} />
