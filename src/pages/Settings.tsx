@@ -1,4 +1,4 @@
-import { User, Globe, MessageSquare, Shield, FileText, LogOut, Crown } from 'lucide-react';
+import { User, Globe, MessageSquare, Shield, FileText, LogOut, Crown, ClipboardList } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -30,6 +30,12 @@ export default function Settings() {
       label: t('settings.language'),
       value: language === 'zh' ? '中文' : 'English',
       onClick: () => setLanguage(language === 'zh' ? 'en' : 'zh'),
+    },
+    {
+      icon: ClipboardList,
+      label: t('settings.treatmentCodes'),
+      value: t('settings.treatmentCodesDesc'),
+      onClick: () => navigate('/treatment-codes'),
     },
     {
       icon: Crown,

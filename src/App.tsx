@@ -25,6 +25,7 @@ import AddReminder from "./pages/AddReminder";
 import Insights from "./pages/Insights";
 import Settings from "./pages/Settings";
 import Membership from "./pages/Membership";
+import TreatmentCodes from "./pages/TreatmentCodes";
 import AIVet from "./pages/AIVet";
 import NotFound from "./pages/NotFound";
 import { FloatingAIVetBubble } from "./components/FloatingAIVetBubble";
@@ -91,6 +92,7 @@ function AppRoutes() {
       <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       <Route path="/membership" element={<ProtectedRoute><Membership /></ProtectedRoute>} />
+      <Route path="/treatment-codes" element={<ProtectedRoute><TreatmentCodes /></ProtectedRoute>} />
       <Route path="/ai-vet" element={<ProtectedRoute><AIVet /></ProtectedRoute>} />
 
       {/* Catch-all */}
