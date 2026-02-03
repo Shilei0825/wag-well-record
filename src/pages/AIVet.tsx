@@ -351,9 +351,9 @@ export default function AIVet() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="h-screen bg-background flex flex-col">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-background border-b">
+      <div className="flex-shrink-0 z-10 bg-background border-b">
         <div className="flex items-center justify-between p-4 max-w-lg mx-auto">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft className="h-5 w-5" />
@@ -372,9 +372,9 @@ export default function AIVet() {
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto">
+      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full overflow-hidden">
         {/* Pet Selector - Required */}
-        <div className="p-4 border-b">
+        <div className="flex-shrink-0 p-4 border-b">
           <label className="text-sm font-medium mb-2 block">
             {language === 'zh' ? '选择宠物 *' : 'Select Pet *'}
           </label>
@@ -399,7 +399,7 @@ export default function AIVet() {
 
         {!selectedPetId ? (
           /* Show prompt to select pet */
-          <div className="p-8 text-center">
+          <div className="flex-1 p-8 text-center">
             <Stethoscope className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
             <h3 className="font-medium mb-2">
               {language === 'zh' ? '请先选择宠物' : 'Please select a pet first'}
@@ -412,7 +412,7 @@ export default function AIVet() {
           </div>
         ) : viewMode === 'intake' ? (
           /* Intake Form */
-          <div className="p-4">
+          <div className="flex-1 overflow-y-auto p-4">
             <div className="mb-4">
               <h2 className="text-lg font-semibold mb-1">
                 {language === 'zh' ? '请描述宠物的症状' : 'Describe your pet\'s symptoms'}
@@ -430,8 +430,8 @@ export default function AIVet() {
           </div>
         ) : (
           /* Chat View */
-          <div className="flex flex-col h-[calc(100vh-180px)]">
-            {/* Messages */}
+          <>
+            {/* Messages - Scrollable */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.length === 0 && (
                 <Card className="p-6 text-center bg-muted/50">
@@ -483,8 +483,8 @@ export default function AIVet() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
-            <div className="border-t p-4 bg-background">
+            {/* Input - Fixed at bottom */}
+            <div className="flex-shrink-0 border-t p-4 bg-background">
               <div className="flex gap-2">
                 <Textarea
                   ref={textareaRef}
@@ -512,7 +512,7 @@ export default function AIVet() {
                 {t('aivet.disclaimer')}
               </p>
             </div>
-          </div>
+          </>
         )}
       </div>
 
