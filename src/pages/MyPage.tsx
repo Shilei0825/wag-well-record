@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Camera, Image, Settings, ChevronRight, Flame, Calendar, Play } from 'lucide-react';
+import { Camera, Image, Settings, ChevronRight, Flame, Calendar, Play, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,7 @@ export default function MyPage() {
   const [showCheckInAnimation, setShowCheckInAnimation] = useState(false);
   const [showSlideshow, setShowSlideshow] = useState(false);
   const [todayCheckedInPetIds, setTodayCheckedInPetIds] = useState<string[]>([]);
+  const [showPetSelector, setShowPetSelector] = useState(true);
   
   const selectedPet = pets.find(p => p.id === selectedPetId) || pets[0];
   
@@ -104,15 +105,42 @@ export default function MyPage() {
       {/* Pet Selector for Check-in */}
       {pets.length > 0 && (
         <div className="mb-4">
-          <h3 className="text-sm font-medium text-muted-foreground mb-2">
-            {language === 'zh' ? '选择宠物' : 'Select Pet'}
-          </h3>
-          <CheckInPetSelector
-            pets={pets}
-            selectedPetId={selectedPetId}
-            onSelect={setSelectedPetId}
-            checkedInPetIds={todayCheckedInPetIds}
-          />
+          <button
+            onClick={() => setShowPetSelector(!showPetSelector)}
+            className="flex items-center justify-between w-full text-sm font-medium text-muted-foreground mb-2 hover:text-foreground transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              {language === 'zh' ? '选择宠物' : 'Select Pet'}
+              {selectedPet && (
+                <span className="text-foreground">
+                  ({selectedPet.species === 'dog' ? '🐕' : '🐱'} {selectedPet.name})
+                </span>
+              )}
+            </span>
+            {showPetSelector ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </button>
+          <AnimatePresence>
+            {showPetSelector && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <CheckInPetSelector
+                  pets={pets}
+                  selectedPetId={selectedPetId}
+                  onSelect={setSelectedPetId}
+                  checkedInPetIds={todayCheckedInPetIds}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
