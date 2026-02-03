@@ -12,6 +12,8 @@ import { JourneyPath } from '@/components/JourneyPath';
 import { CheckInCamera } from '@/components/CheckInCamera';
 import { CheckInAnimation } from '@/components/CheckInAnimation';
 import { SlideshowPlayer } from '@/components/SlideshowPlayer';
+import { CheckInPetSelector } from '@/components/CheckInPetSelector';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export default function MyPage() {
@@ -23,6 +25,7 @@ export default function MyPage() {
   const [showCamera, setShowCamera] = useState(false);
   const [showCheckInAnimation, setShowCheckInAnimation] = useState(false);
   const [showSlideshow, setShowSlideshow] = useState(false);
+  const [todayCheckedInPetIds, setTodayCheckedInPetIds] = useState<string[]>([]);
   
   const selectedPet = pets.find(p => p.id === selectedPetId) || pets[0];
   
@@ -31,12 +34,32 @@ export default function MyPage() {
   const { data: allCheckIns = [] } = useCheckIns(selectedPet?.id);
   const createCheckIn = useCreateCheckIn();
   
-  // Set default selected pet
+  // Set default selected pet and fetch today's check-ins for all pets
   useEffect(() => {
     if (pets.length > 0 && !selectedPetId) {
       setSelectedPetId(pets[0].id);
     }
   }, [pets, selectedPetId]);
+  
+  // Fetch which pets have already checked in today
+  useEffect(() => {
+    const fetchTodayCheckIns = async () => {
+      if (!user || pets.length === 0) return;
+      
+      const today = new Date().toISOString().split('T')[0];
+      const { data } = await supabase
+        .from('pet_checkins')
+        .select('pet_id')
+        .eq('check_in_date', today)
+        .in('pet_id', pets.map(p => p.id));
+      
+      if (data) {
+        setTodayCheckedInPetIds(data.map(d => d.pet_id));
+      }
+    };
+    
+    fetchTodayCheckIns();
+  }, [user, pets, showCheckInAnimation]);
 
   const handleCheckIn = async (file: File) => {
     if (!selectedPet) {
@@ -77,22 +100,18 @@ export default function MyPage() {
         </Button>
       </div>
 
-      {/* Pet Selector */}
-      {pets.length > 1 && (
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-          {pets.map((pet) => (
-            <button
-              key={pet.id}
-              onClick={() => setSelectedPetId(pet.id)}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                selectedPetId === pet.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
-            >
-              {pet.species === 'dog' ? '🐕' : '🐱'} {pet.name}
-            </button>
-          ))}
+      {/* Pet Selector for Check-in */}
+      {pets.length > 0 && (
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-muted-foreground mb-2">
+            {language === 'zh' ? '选择宠物' : 'Select Pet'}
+          </h3>
+          <CheckInPetSelector
+            pets={pets}
+            selectedPetId={selectedPetId}
+            onSelect={setSelectedPetId}
+            checkedInPetIds={todayCheckedInPetIds}
+          />
         </div>
       )}
 

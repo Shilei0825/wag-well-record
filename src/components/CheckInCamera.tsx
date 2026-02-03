@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Camera, X, Check, RotateCcw } from 'lucide-react';
+import { Camera, X, Check, RotateCcw, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CheckInCameraProps {
   onCapture: (file: File) => void;
@@ -81,17 +82,53 @@ export function CheckInCamera({ onCapture, onClose }: CheckInCameraProps) {
 
   const retake = () => {
     setCapturedImage(null);
+    setValidationError(null);
   };
+
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const confirm = async () => {
     if (!capturedImage) return;
     
-    // Convert data URL to File
-    const response = await fetch(capturedImage);
-    const blob = await response.blob();
-    const file = new File([blob], `checkin-${Date.now()}.jpg`, { type: 'image/jpeg' });
+    setIsValidating(true);
+    setValidationError(null);
     
-    onCapture(file);
+    try {
+      // Validate with AI that the image contains a pet
+      const { data: validationResult, error: validationError } = await supabase.functions.invoke('validate-pet-photo', {
+        body: { imageBase64: capturedImage }
+      });
+      
+      if (validationError) {
+        console.error('Validation error:', validationError);
+        // Fail-safe: proceed if validation service is unavailable
+      } else if (validationResult && !validationResult.isPet) {
+        setValidationError(
+          language === 'zh' 
+            ? `未检测到宠物: ${validationResult.reason || '请拍一张包含宠物的照片'}` 
+            : `No pet detected: ${validationResult.reason || 'Please take a photo with your pet'}`
+        );
+        setIsValidating(false);
+        return;
+      }
+      
+      // Convert data URL to File
+      const response = await fetch(capturedImage);
+      const blob = await response.blob();
+      const file = new File([blob], `checkin-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      
+      onCapture(file);
+    } catch (error) {
+      console.error('Validation error:', error);
+      // Fail-safe: proceed even if validation fails
+      const response = await fetch(capturedImage);
+      const blob = await response.blob();
+      const file = new File([blob], `checkin-${Date.now()}.jpg`, { type: 'image/jpeg' });
+      onCapture(file);
+    } finally {
+      setIsValidating(false);
+    }
   };
 
   const switchCamera = async () => {
@@ -183,32 +220,62 @@ export function CheckInCamera({ onCapture, onClose }: CheckInCameraProps) {
       {/* Hidden canvas for capture */}
       <canvas ref={canvasRef} className="hidden" />
 
+      {/* Validation Error */}
+      {validationError && (
+        <div className="absolute bottom-32 left-0 right-0 z-20 px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-destructive/90 text-destructive-foreground rounded-xl p-4 flex items-start gap-3"
+          >
+            <AlertCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+            <p className="text-sm">{validationError}</p>
+          </motion.div>
+        </div>
+      )}
+
       {/* Bottom Controls */}
       <div className="absolute bottom-0 left-0 right-0 z-10 p-8 pb-12">
         <AnimatePresence mode="wait">
           {capturedImage ? (
             <motion.div
               key="confirm"
-              className="flex items-center justify-center gap-8"
+              className="flex flex-col items-center gap-4"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 20, opacity: 0 }}
             >
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={retake}
-                className="rounded-full w-16 h-16 bg-white/10 border-white/30 text-white hover:bg-white/20"
-              >
-                <RotateCcw className="h-6 w-6" />
-              </Button>
-              <Button
-                size="lg"
-                onClick={confirm}
-                className="rounded-full w-20 h-20 bg-primary hover:bg-primary/90"
-              >
-                <Check className="h-8 w-8" />
-              </Button>
+              {isValidating && (
+                <div className="flex items-center gap-2 text-white mb-2">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span className="text-sm">
+                    {language === 'zh' ? '正在验证照片...' : 'Validating photo...'}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center justify-center gap-8">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={retake}
+                  disabled={isValidating}
+                  className="rounded-full w-16 h-16 bg-white/10 border-white/30 text-white hover:bg-white/20"
+                >
+                  <RotateCcw className="h-6 w-6" />
+                </Button>
+                <Button
+                  size="lg"
+                  onClick={confirm}
+                  disabled={isValidating}
+                  className="rounded-full w-20 h-20 bg-primary hover:bg-primary/90"
+                >
+                  {isValidating ? (
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  ) : (
+                    <Check className="h-8 w-8" />
+                  )}
+                </Button>
+              </div>
             </motion.div>
           ) : (
             <motion.div
