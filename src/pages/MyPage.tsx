@@ -26,7 +26,7 @@ export default function MyPage() {
   const [showCheckInAnimation, setShowCheckInAnimation] = useState(false);
   const [showSlideshow, setShowSlideshow] = useState(false);
   const [todayCheckedInPetIds, setTodayCheckedInPetIds] = useState<string[]>([]);
-  const [showPetSelector, setShowPetSelector] = useState(true);
+  const [showPetSelector, setShowPetSelector] = useState(false);
   
   const selectedPet = pets.find(p => p.id === selectedPetId) || pets[0];
   
