@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePets } from '@/hooks/usePets';
-import { useCheckIns, useCreateCheckIn, useTodayCheckIn, useCheckInStreak } from '@/hooks/useCheckIns';
+import { useCheckIns, useCreateCheckIn, useTodayCheckIn, useCheckInStreak, useDeleteCheckIn } from '@/hooks/useCheckIns';
 import { BottomNav } from '@/components/BottomNav';
 import { JourneyPath } from '@/components/JourneyPath';
 import { CheckInCamera } from '@/components/CheckInCamera';
@@ -33,6 +33,7 @@ export default function MyPage() {
   const { data: streak = 0 } = useCheckInStreak(selectedPet?.id);
   const { data: allCheckIns = [] } = useCheckIns(selectedPet?.id);
   const createCheckIn = useCreateCheckIn();
+  const deleteCheckIn = useDeleteCheckIn();
   
   // Set default selected pet and fetch today's check-ins for all pets
   useEffect(() => {
@@ -137,17 +138,38 @@ export default function MyPage() {
           </div>
           
           {todayCheckIn ? (
-            <div className="flex items-center gap-2">
-              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
-                <img 
-                  src={todayCheckIn.photo_url} 
-                  alt="Today's check-in"
-                  className="w-full h-full object-cover"
-                />
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  if (confirm(language === 'zh' ? '确定要重新打卡吗？' : 'Retake check-in photo?')) {
+                    deleteCheckIn.mutate(todayCheckIn.id, {
+                      onSuccess: () => {
+                        setShowCamera(true);
+                      }
+                    });
+                  }
+                }}
+                className="relative group"
+              >
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary">
+                  <img 
+                    src={todayCheckIn.photo_url} 
+                    alt="Today's check-in"
+                    className="w-full h-full object-cover group-hover:opacity-70 transition-opacity"
+                  />
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera className="h-4 w-4 text-white drop-shadow-lg" />
+                </div>
+              </button>
+              <div className="text-left">
+                <span className="text-sm text-primary font-medium block">
+                  ✓ {language === 'zh' ? '已打卡' : 'Done'}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {language === 'zh' ? '点击重新拍照' : 'Tap to retake'}
+                </span>
               </div>
-              <span className="text-sm text-primary font-medium">
-                ✓ {language === 'zh' ? '已打卡' : 'Done'}
-              </span>
             </div>
           ) : (
             <Button

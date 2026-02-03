@@ -136,6 +136,26 @@ export function useCreateCheckIn() {
   });
 }
 
+export function useDeleteCheckIn() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (checkInId: string) => {
+      const { error } = await supabase
+        .from('pet_checkins')
+        .delete()
+        .eq('id', checkInId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['checkins'] });
+      queryClient.invalidateQueries({ queryKey: ['checkin-today'] });
+      queryClient.invalidateQueries({ queryKey: ['checkin-streak'] });
+    },
+  });
+}
+
 export function useCheckInStreak(petId?: string) {
   const { user } = useAuth();
   
