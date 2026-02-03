@@ -56,13 +56,17 @@ export function PetCard({ pet }: PetCardProps) {
     >
       <div
         className={cn(
-          'h-14 w-14 rounded-full flex items-center justify-center',
-          pet.species === 'dog' 
-            ? 'bg-pet-dog/10' 
-            : 'bg-pet-cat/10'
+          'h-14 w-14 rounded-full flex items-center justify-center overflow-hidden',
+          pet.avatar_url
+            ? 'bg-muted'
+            : pet.species === 'dog' 
+              ? 'bg-pet-dog/10' 
+              : 'bg-pet-cat/10'
         )}
       >
-        {pet.species === 'dog' ? (
+        {pet.avatar_url ? (
+          <img src={pet.avatar_url} alt={pet.name} className="h-full w-full object-cover" />
+        ) : pet.species === 'dog' ? (
           <Dog className="h-7 w-7 text-pet-dog" />
         ) : (
           <Cat className="h-7 w-7 text-pet-cat" />

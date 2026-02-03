@@ -8,8 +8,10 @@ import { useVisits } from '@/hooks/useVisits';
 import { PageHeader } from '@/components/PageHeader';
 import { StatCard } from '@/components/StatCard';
 import { BottomNav } from '@/components/BottomNav';
+import { PetAvatarUpload } from '@/components/PetAvatarUpload';
 import { format, parseISO, startOfMonth, startOfYear, isAfter, differenceInDays, setYear } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function PetProfile() {
   const { petId } = useParams();
@@ -18,6 +20,7 @@ export default function PetProfile() {
   const { data: pet, isLoading } = usePet(petId);
   const { data: expenses } = useExpenses(petId);
   const { data: visits } = useVisits(petId);
+  const queryClient = useQueryClient();
 
   const now = new Date();
   const monthStart = startOfMonth(now);
@@ -214,18 +217,16 @@ export default function PetProfile() {
       {/* Pet Info Card */}
       <div className="card-elevated p-6 mb-6">
         <div className="flex items-center gap-4 mb-4">
-          <div
-            className={cn(
-              'h-16 w-16 rounded-full flex items-center justify-center',
-              pet.species === 'dog' ? 'bg-pet-dog/10' : 'bg-pet-cat/10'
-            )}
-          >
-            {pet.species === 'dog' ? (
-              <Dog className="h-8 w-8 text-pet-dog" />
-            ) : (
-              <Cat className="h-8 w-8 text-pet-cat" />
-            )}
-          </div>
+          <PetAvatarUpload
+            petId={petId!}
+            species={pet.species as 'dog' | 'cat'}
+            currentAvatarUrl={pet.avatar_url}
+            onUploadComplete={() => {
+              queryClient.invalidateQueries({ queryKey: ['pet', petId] });
+              queryClient.invalidateQueries({ queryKey: ['pets'] });
+            }}
+            size="lg"
+          />
           <div>
             <h2 className="text-xl font-bold text-foreground">{pet.name}</h2>
             <p className="text-muted-foreground">
