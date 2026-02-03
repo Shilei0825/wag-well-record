@@ -159,6 +159,69 @@ export type Database = {
           },
         ]
       }
+      pet_tasks: {
+        Row: {
+          category: Database["public"]["Enums"]["task_category"]
+          created_at: string
+          description: string | null
+          due_date: string
+          id: string
+          interval_days: number | null
+          last_completed_at: string | null
+          pet_id: string
+          recurrence_type: Database["public"]["Enums"]["task_recurrence"]
+          status: Database["public"]["Enums"]["task_status"]
+          template_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["task_category"]
+          created_at?: string
+          description?: string | null
+          due_date: string
+          id?: string
+          interval_days?: number | null
+          last_completed_at?: string | null
+          pet_id: string
+          recurrence_type?: Database["public"]["Enums"]["task_recurrence"]
+          status?: Database["public"]["Enums"]["task_status"]
+          template_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["task_category"]
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          interval_days?: number | null
+          last_completed_at?: string | null
+          pet_id?: string
+          recurrence_type?: Database["public"]["Enums"]["task_recurrence"]
+          status?: Database["public"]["Enums"]["task_status"]
+          template_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pet_tasks_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pet_tasks_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "task_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pets: {
         Row: {
           avatar_url: string | null
@@ -266,6 +329,45 @@ export type Database = {
           },
         ]
       }
+      task_templates: {
+        Row: {
+          category: Database["public"]["Enums"]["task_category"]
+          created_at: string
+          default_due_offset_days: number
+          description: string | null
+          id: string
+          interval_days: number | null
+          is_active: boolean
+          recurrence_type: Database["public"]["Enums"]["task_recurrence"]
+          species: Database["public"]["Enums"]["task_species"]
+          title: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["task_category"]
+          created_at?: string
+          default_due_offset_days?: number
+          description?: string | null
+          id?: string
+          interval_days?: number | null
+          is_active?: boolean
+          recurrence_type?: Database["public"]["Enums"]["task_recurrence"]
+          species: Database["public"]["Enums"]["task_species"]
+          title: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["task_category"]
+          created_at?: string
+          default_due_offset_days?: number
+          description?: string | null
+          id?: string
+          interval_days?: number | null
+          is_active?: boolean
+          recurrence_type?: Database["public"]["Enums"]["task_recurrence"]
+          species?: Database["public"]["Enums"]["task_species"]
+          title?: string
+        }
+        Relationships: []
+      }
       visits: {
         Row: {
           clinic_name: string
@@ -324,7 +426,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      task_category: "health" | "grooming" | "activity" | "training" | "admin"
+      task_recurrence:
+        | "one_time"
+        | "daily"
+        | "weekly"
+        | "monthly"
+        | "interval_days"
+      task_species: "dog" | "cat"
+      task_status: "active" | "done"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -451,6 +561,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      task_category: ["health", "grooming", "activity", "training", "admin"],
+      task_recurrence: [
+        "one_time",
+        "daily",
+        "weekly",
+        "monthly",
+        "interval_days",
+      ],
+      task_species: ["dog", "cat"],
+      task_status: ["active", "done"],
+    },
   },
 } as const
