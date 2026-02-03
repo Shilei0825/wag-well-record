@@ -1,4 +1,4 @@
-import "jsr:@supabase/supabase-js@2";
+import "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
