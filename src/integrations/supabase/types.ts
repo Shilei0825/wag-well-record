@@ -159,6 +159,41 @@ export type Database = {
           },
         ]
       }
+      pet_checkins: {
+        Row: {
+          check_in_date: string
+          created_at: string
+          id: string
+          pet_id: string
+          photo_url: string
+          user_id: string
+        }
+        Insert: {
+          check_in_date?: string
+          created_at?: string
+          id?: string
+          pet_id: string
+          photo_url: string
+          user_id: string
+        }
+        Update: {
+          check_in_date?: string
+          created_at?: string
+          id?: string
+          pet_id?: string
+          photo_url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pet_checkins_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pet_tasks: {
         Row: {
           category: Database["public"]["Enums"]["task_category"]
@@ -322,6 +357,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "reminders_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      slideshows: {
+        Row: {
+          created_at: string
+          date_range_end: string | null
+          date_range_start: string | null
+          id: string
+          music_track: string
+          pet_id: string | null
+          slideshow_type: string
+          status: string
+          title: string
+          user_id: string
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          date_range_end?: string | null
+          date_range_start?: string | null
+          id?: string
+          music_track?: string
+          pet_id?: string | null
+          slideshow_type?: string
+          status?: string
+          title: string
+          user_id: string
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          date_range_end?: string | null
+          date_range_start?: string | null
+          id?: string
+          music_track?: string
+          pet_id?: string | null
+          slideshow_type?: string
+          status?: string
+          title?: string
+          user_id?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "slideshows_pet_id_fkey"
             columns: ["pet_id"]
             isOneToOne: false
             referencedRelation: "pets"

@@ -19,7 +19,23 @@ const translations: Translations = {
   'nav.pets': { zh: '宠物', en: 'Pets' },
   'nav.insights': { zh: '统计', en: 'Insights' },
   'nav.settings': { zh: '设置', en: 'Settings' },
+  'nav.my': { zh: '我的', en: 'My' },
   'nav.aivet': { zh: '宠博士', en: 'AI Vet' },
+  
+  // My Page / Check-in
+  'my.title': { zh: '我的', en: 'My' },
+  'my.dailyCheckin': { zh: '每日打卡', en: 'Daily Check-in' },
+  'my.streak': { zh: '连续打卡', en: 'day streak' },
+  'my.checkIn': { zh: '拍照打卡', en: 'Check In' },
+  'my.checkedIn': { zh: '已打卡', en: 'Done' },
+  'my.journey': { zh: '打卡足迹', en: 'Check-in Journey' },
+  'my.createAlbum': { zh: '生成回忆相册', en: 'Create Memory Album' },
+  'my.recentCheckins': { zh: '最近打卡', en: 'Recent Check-ins' },
+  'my.addPetFirst': { zh: '请先添加宠物才能开始打卡', en: 'Add a pet first to start checking in' },
+  'my.alreadyCheckedIn': { zh: '今天已经打卡过了', en: 'Already checked in today' },
+  'my.checkInSuccess': { zh: '打卡成功！', en: 'Check-in Complete!' },
+  'my.selectPet': { zh: '请先选择宠物', en: 'Please select a pet first' },
+  'my.checkInFailed': { zh: '打卡失败', en: 'Check-in failed' },
   
   // Auth
   'auth.login': { zh: '登录', en: 'Login' },
