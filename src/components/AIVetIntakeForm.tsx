@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { MessageSquare, ClipboardList } from 'lucide-react';
 
-interface IntakeData {
+export interface IntakeData {
   mainSymptom: string;
   duration: string;
   severity: string;
@@ -17,9 +17,16 @@ interface IntakeData {
   additionalNotes: string;
 }
 
+export interface AIVetIntakeFormRef {
+  submit: () => void;
+  isValid: () => boolean;
+}
+
 interface AIVetIntakeFormProps {
   onSubmit: (data: IntakeData) => void;
   onSkipToChat: () => void;
+  renderButtons?: boolean;
+  onValidityChange?: (isValid: boolean) => void;
 }
 
 const SYMPTOM_OPTIONS = {
@@ -93,7 +100,8 @@ const SEVERITY_OPTIONS = {
   ],
 };
 
-export function AIVetIntakeForm({ onSubmit, onSkipToChat }: AIVetIntakeFormProps) {
+export const AIVetIntakeForm = forwardRef<AIVetIntakeFormRef, AIVetIntakeFormProps>(
+  function AIVetIntakeForm({ onSubmit, onSkipToChat, renderButtons = true, onValidityChange }, ref) {
   const { language, t } = useLanguage();
   const [mainSymptom, setMainSymptom] = useState('');
   const [duration, setDuration] = useState('');
@@ -114,19 +122,32 @@ export function AIVetIntakeForm({ onSubmit, onSkipToChat }: AIVetIntakeFormProps
   };
 
   const handleSubmit = () => {
-    onSubmit({
-      mainSymptom,
-      duration,
-      severity,
-      additionalSymptoms,
-      additionalNotes,
-    });
+    if (mainSymptom && duration && severity) {
+      onSubmit({
+        mainSymptom,
+        duration,
+        severity,
+        additionalSymptoms,
+        additionalNotes,
+      });
+    }
   };
 
   const isValid = mainSymptom && duration && severity;
 
+  // Notify parent of validity changes
+  useEffect(() => {
+    onValidityChange?.(Boolean(isValid));
+  }, [isValid, onValidityChange]);
+
+  // Expose submit and isValid to parent via ref
+  useImperativeHandle(ref, () => ({
+    submit: handleSubmit,
+    isValid: () => Boolean(isValid),
+  }));
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" id="intake-form-data" data-main-symptom={mainSymptom} data-duration={duration} data-severity={severity}>
       {/* Main Symptom */}
       <Card>
         <CardHeader className="pb-3">
@@ -243,26 +264,28 @@ export function AIVetIntakeForm({ onSubmit, onSkipToChat }: AIVetIntakeFormProps
         </CardContent>
       </Card>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col gap-3 pt-2">
-        <Button 
-          onClick={handleSubmit} 
-          disabled={!isValid}
-          className="w-full"
-          size="lg"
-        >
-          <ClipboardList className="h-4 w-4 mr-2" />
-          {language === 'zh' ? '获取建议' : 'Get Suggestions'}
-        </Button>
-        <Button 
-          variant="outline" 
-          onClick={onSkipToChat}
-          className="w-full"
-        >
-          <MessageSquare className="h-4 w-4 mr-2" />
-          {language === 'zh' ? '直接开始对话' : 'Skip to Free Chat'}
-        </Button>
-      </div>
+      {/* Action Buttons - only rendered if renderButtons is true */}
+      {renderButtons && (
+        <div className="flex flex-col gap-3 pt-2">
+          <Button 
+            onClick={handleSubmit} 
+            disabled={!isValid}
+            className="w-full"
+            size="lg"
+          >
+            <ClipboardList className="h-4 w-4 mr-2" />
+            {language === 'zh' ? '获取建议' : 'Get Suggestions'}
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={onSkipToChat}
+            className="w-full"
+          >
+            <MessageSquare className="h-4 w-4 mr-2" />
+            {language === 'zh' ? '直接开始对话' : 'Skip to Free Chat'}
+          </Button>
+        </div>
+      )}
     </div>
   );
-}
+});

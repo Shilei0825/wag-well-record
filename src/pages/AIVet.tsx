@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, Bot, User, Loader2, Stethoscope, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Send, Bot, User, Loader2, Stethoscope, RotateCcw, ClipboardList, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
@@ -9,7 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { usePets } from '@/hooks/usePets';
 import { useCreateConsultation } from '@/hooks/useAIVetConsultations';
 import { BottomNav } from '@/components/BottomNav';
-import { AIVetIntakeForm } from '@/components/AIVetIntakeForm';
+import { AIVetIntakeForm, AIVetIntakeFormRef } from '@/components/AIVetIntakeForm';
 import { AIVetMessage } from '@/components/AIVetMessage';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
@@ -79,9 +79,11 @@ export default function AIVet() {
   const [selectedPetId, setSelectedPetId] = useState<string>('');
   const [currentIntakeData, setCurrentIntakeData] = useState<IntakeData | null>(null);
   const [hasBeenSaved, setHasBeenSaved] = useState(false);
+  const [intakeFormValid, setIntakeFormValid] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const intakeFormRef = useRef<AIVetIntakeFormRef>(null);
 
   const selectedPet = pets?.find(p => p.id === selectedPetId);
 
@@ -394,7 +396,7 @@ export default function AIVet() {
             <p className="text-xs text-muted-foreground mt-1">
               {language === 'zh' ? '请先选择要咨询的宠物' : 'Please select a pet first'}
             </p>
-        )}
+          )}
         </div>
 
         {!selectedPetId ? (
@@ -412,22 +414,50 @@ export default function AIVet() {
           </div>
         ) : viewMode === 'intake' ? (
           /* Intake Form */
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold mb-1">
-                {language === 'zh' ? '请描述宠物的症状' : 'Describe your pet\'s symptoms'}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {language === 'zh' 
-                  ? '填写以下信息，帮助宠博士更好地了解情况' 
-                  : 'Fill in the details below to help AI Vet understand the situation'}
-              </p>
+          <>
+            {/* Scrollable form content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold mb-1">
+                  {language === 'zh' ? '请描述宠物的症状' : 'Describe your pet\'s symptoms'}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {language === 'zh' 
+                    ? '填写以下信息，帮助宠博士更好地了解情况' 
+                    : 'Fill in the details below to help AI Vet understand the situation'}
+                </p>
+              </div>
+              <AIVetIntakeForm 
+                ref={intakeFormRef}
+                onSubmit={handleIntakeSubmit}
+                onSkipToChat={handleSkipToChat}
+                renderButtons={false}
+                onValidityChange={setIntakeFormValid}
+              />
             </div>
-            <AIVetIntakeForm 
-              onSubmit={handleIntakeSubmit}
-              onSkipToChat={handleSkipToChat}
-            />
-          </div>
+            {/* Fixed bottom buttons */}
+            <div className="flex-shrink-0 border-t p-4 bg-background">
+              <div className="flex flex-col gap-3">
+                <Button 
+                  onClick={() => intakeFormRef.current?.submit()}
+                  disabled={!intakeFormValid}
+                  className="w-full"
+                  size="lg"
+                >
+                  <ClipboardList className="h-4 w-4 mr-2" />
+                  {language === 'zh' ? '获取建议' : 'Get Suggestions'}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleSkipToChat}
+                  className="w-full"
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  {language === 'zh' ? '直接开始对话' : 'Skip to Free Chat'}
+                </Button>
+              </div>
+            </div>
+          </>
         ) : (
           /* Chat View */
           <>
