@@ -76,12 +76,12 @@ export default function AddReminder() {
               {language === 'zh' ? '关联宠物' : 'Related Pet'}{' '}
               <span className="text-muted-foreground">({t('common.optional')})</span>
             </Label>
-            <Select value={petId} onValueChange={setPetId}>
+            <Select value={petId || 'none'} onValueChange={(val) => setPetId(val === 'none' ? '' : val)}>
               <SelectTrigger className="input-mobile">
                 <SelectValue placeholder={language === 'zh' ? '选择宠物' : 'Select a pet'} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">
+                <SelectItem value="none">
                   {language === 'zh' ? '不关联' : 'None'}
                 </SelectItem>
                 {pets.map((pet) => (
