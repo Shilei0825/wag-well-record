@@ -18,6 +18,8 @@ export default function Dashboard() {
   const { data: pets, isLoading: petsLoading } = usePets();
   const { data: reminders } = useReminders();
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+  
+  // Must be after selectedPet is declared
   const { data: activeRecoveryPlan } = useActiveRecoveryPlan(selectedPet?.id);
 
   useEffect(() => {
