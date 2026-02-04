@@ -11,8 +11,9 @@ interface Translations {
 
 const translations: Translations = {
   // App
-  'app.name': { zh: '宠物健康', en: 'PetCare' },
+  'app.name': { zh: '宠博士', en: 'Dr. Paws' },
   'app.tagline': { zh: '记录宠物健康与花费，未来一键保障', en: 'Track pet health & expenses, secure their future' },
+  'app.trademark': { zh: '© Yumi Health Group LLC', en: '© Yumi Health Group LLC' },
   
   // Navigation
   'nav.home': { zh: '首页', en: 'Home' },
