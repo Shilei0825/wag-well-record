@@ -320,6 +320,106 @@ export type Database = {
         }
         Relationships: []
       }
+      recovery_checkins: {
+        Row: {
+          appetite: Database["public"]["Enums"]["appetite_level"]
+          created_at: string
+          day_index: number
+          energy: Database["public"]["Enums"]["energy_level"]
+          id: string
+          notes: string | null
+          plan_id: string
+          symptom_status: Database["public"]["Enums"]["symptom_status"]
+        }
+        Insert: {
+          appetite: Database["public"]["Enums"]["appetite_level"]
+          created_at?: string
+          day_index: number
+          energy: Database["public"]["Enums"]["energy_level"]
+          id?: string
+          notes?: string | null
+          plan_id: string
+          symptom_status: Database["public"]["Enums"]["symptom_status"]
+        }
+        Update: {
+          appetite?: Database["public"]["Enums"]["appetite_level"]
+          created_at?: string
+          day_index?: number
+          energy?: Database["public"]["Enums"]["energy_level"]
+          id?: string
+          notes?: string | null
+          plan_id?: string
+          symptom_status?: Database["public"]["Enums"]["symptom_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recovery_checkins_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "recovery_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recovery_plans: {
+        Row: {
+          ai_summary: string | null
+          completed_at: string | null
+          created_at: string
+          duration_days: number
+          id: string
+          main_symptom: string
+          pet_id: string
+          recovery_trend: string | null
+          severity_level: Database["public"]["Enums"]["recovery_severity"]
+          source_id: string | null
+          source_type: Database["public"]["Enums"]["recovery_source_type"]
+          status: Database["public"]["Enums"]["recovery_status"]
+          suggestion: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          completed_at?: string | null
+          created_at?: string
+          duration_days?: number
+          id?: string
+          main_symptom: string
+          pet_id: string
+          recovery_trend?: string | null
+          severity_level?: Database["public"]["Enums"]["recovery_severity"]
+          source_id?: string | null
+          source_type: Database["public"]["Enums"]["recovery_source_type"]
+          status?: Database["public"]["Enums"]["recovery_status"]
+          suggestion?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_summary?: string | null
+          completed_at?: string | null
+          created_at?: string
+          duration_days?: number
+          id?: string
+          main_symptom?: string
+          pet_id?: string
+          recovery_trend?: string | null
+          severity_level?: Database["public"]["Enums"]["recovery_severity"]
+          source_id?: string | null
+          source_type?: Database["public"]["Enums"]["recovery_source_type"]
+          status?: Database["public"]["Enums"]["recovery_status"]
+          suggestion?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recovery_plans_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reminders: {
         Row: {
           created_at: string
@@ -511,6 +611,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      appetite_level: "normal" | "reduced" | "poor"
+      energy_level: "normal" | "low" | "very_low"
+      recovery_severity: "mild" | "moderate"
+      recovery_source_type: "ai_consult" | "vet_visit"
+      recovery_status: "active" | "completed"
+      symptom_status: "improved" | "same" | "worse"
       task_category: "health" | "grooming" | "activity" | "training" | "admin"
       task_recurrence:
         | "one_time"
@@ -647,6 +753,12 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      appetite_level: ["normal", "reduced", "poor"],
+      energy_level: ["normal", "low", "very_low"],
+      recovery_severity: ["mild", "moderate"],
+      recovery_source_type: ["ai_consult", "vet_visit"],
+      recovery_status: ["active", "completed"],
+      symptom_status: ["improved", "same", "worse"],
       task_category: ["health", "grooming", "activity", "training", "admin"],
       task_recurrence: [
         "one_time",

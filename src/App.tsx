@@ -28,6 +28,9 @@ import MyPage from "./pages/MyPage";
 import Membership from "./pages/Membership";
 import TreatmentCodes from "./pages/TreatmentCodes";
 import AIVet from "./pages/AIVet";
+import RecoveryCheckin from "./pages/RecoveryCheckin";
+import RecoverySummary from "./pages/RecoverySummary";
+import RecoveryDetail from "./pages/RecoveryDetail";
 import NotFound from "./pages/NotFound";
 import { FloatingAIVetBubble } from "./components/FloatingAIVetBubble";
 
@@ -98,6 +101,9 @@ function AppRoutes() {
       <Route path="/membership" element={<ProtectedRoute><Membership /></ProtectedRoute>} />
       <Route path="/treatment-codes" element={<ProtectedRoute><TreatmentCodes /></ProtectedRoute>} />
       <Route path="/ai-vet" element={<ProtectedRoute><AIVet /></ProtectedRoute>} />
+      <Route path="/recovery/:planId" element={<ProtectedRoute><RecoveryDetail /></ProtectedRoute>} />
+      <Route path="/recovery/:planId/checkin" element={<ProtectedRoute><RecoveryCheckin /></ProtectedRoute>} />
+      <Route path="/recovery/:planId/summary" element={<ProtectedRoute><RecoverySummary /></ProtectedRoute>} />
 
       {/* Catch-all */}
       <Route path="*" element={<NotFound />} />
