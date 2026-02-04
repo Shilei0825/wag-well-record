@@ -2,3 +2,6 @@ project_id = "nnoxsbrpgppiivlosvsn"
 
 [functions.ai-vet]
 verify_jwt = false
+
+[functions.recovery-summary]
+verify_jwt = false

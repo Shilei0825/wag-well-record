@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePets, Pet } from '@/hooks/usePets';
 import { useReminders } from '@/hooks/useReminders';
+import { useActiveRecoveryPlan } from '@/hooks/useRecoveryPlans';
 import { PetSelector } from '@/components/PetSelector';
 import { EmptyState } from '@/components/EmptyState';
 import { BottomNav } from '@/components/BottomNav';
+import { RecoveryPlanCard } from '@/components/RecoveryPlanCard';
 import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 
 export default function Dashboard() {
@@ -16,6 +18,7 @@ export default function Dashboard() {
   const { data: pets, isLoading: petsLoading } = usePets();
   const { data: reminders } = useReminders();
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+  const { data: activeRecoveryPlan } = useActiveRecoveryPlan(selectedPet?.id);
 
   useEffect(() => {
     if (pets && pets.length > 0 && !selectedPet) {
@@ -117,6 +120,14 @@ export default function Dashboard() {
           ))}
         </div>
       </section>
+
+      {/* Active Recovery Plan */}
+      {activeRecoveryPlan && selectedPet && (
+        <section className="mb-8">
+          <h2 className="section-title">{language === 'zh' ? '恢复观察' : 'Recovery Follow-up'}</h2>
+          <RecoveryPlanCard plan={activeRecoveryPlan} petName={selectedPet.name} />
+        </section>
+      )}
 
       {/* Upcoming Reminders */}
       <section className="mb-8">

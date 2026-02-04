@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { usePets } from '@/hooks/usePets';
 import { useCreateConsultation } from '@/hooks/useAIVetConsultations';
+import { useCreateRecoveryPlan, useActiveRecoveryPlan } from '@/hooks/useRecoveryPlans';
 import { BottomNav } from '@/components/BottomNav';
 import { AIVetIntakeForm, AIVetIntakeFormRef } from '@/components/AIVetIntakeForm';
 import { AIVetMessage } from '@/components/AIVetMessage';
+import { StartRecoveryModal } from '@/components/StartRecoveryModal';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'sonner';
 
@@ -71,6 +73,7 @@ export default function AIVet() {
   const { t, language } = useLanguage();
   const { data: pets } = usePets();
   const createConsultation = useCreateConsultation();
+  const createRecoveryPlan = useCreateRecoveryPlan();
   
   const [viewMode, setViewMode] = useState<ViewMode>('intake');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -80,12 +83,15 @@ export default function AIVet() {
   const [currentIntakeData, setCurrentIntakeData] = useState<IntakeData | null>(null);
   const [hasBeenSaved, setHasBeenSaved] = useState(false);
   const [intakeFormValid, setIntakeFormValid] = useState(false);
+  const [showRecoveryModal, setShowRecoveryModal] = useState(false);
+  const [isCreatingRecovery, setIsCreatingRecovery] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const intakeFormRef = useRef<AIVetIntakeFormRef>(null);
 
   const selectedPet = pets?.find(p => p.id === selectedPetId);
+  const { data: activeRecoveryPlan } = useActiveRecoveryPlan(selectedPetId);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -229,8 +235,38 @@ export default function AIVet() {
       });
       
       setHasBeenSaved(true);
+      
+      // Show recovery modal if no active plan and severity is not emergency
+      if (!activeRecoveryPlan && intakeData.severity !== 'emergency') {
+        setTimeout(() => setShowRecoveryModal(true), 1000);
+      }
     } catch (error) {
       console.error('Failed to save consultation:', error);
+    }
+  };
+
+  const handleStartRecovery = async () => {
+    if (!selectedPetId || !currentIntakeData) return;
+    
+    setIsCreatingRecovery(true);
+    try {
+      const mainSymptomLabel = SYMPTOM_LABELS[currentIntakeData.mainSymptom]?.[language] || currentIntakeData.mainSymptom;
+      
+      await createRecoveryPlan.mutateAsync({
+        pet_id: selectedPetId,
+        source_type: 'ai_consult',
+        main_symptom: mainSymptomLabel,
+        severity_level: currentIntakeData.severity === 'mild' ? 'mild' : 'moderate',
+        duration_days: 3,
+      });
+      
+      toast.success(language === 'zh' ? '恢复观察已开启' : 'Recovery follow-up started');
+      setShowRecoveryModal(false);
+    } catch (error) {
+      console.error('Failed to create recovery plan:', error);
+      toast.error(language === 'zh' ? '创建失败，请重试' : 'Failed to create, please try again');
+    } finally {
+      setIsCreatingRecovery(false);
     }
   };
 
@@ -570,6 +606,16 @@ export default function AIVet() {
           </>
         )}
       </div>
+
+      {/* Recovery Modal */}
+      <StartRecoveryModal
+        open={showRecoveryModal}
+        onOpenChange={setShowRecoveryModal}
+        onConfirm={handleStartRecovery}
+        petName={selectedPet?.name || ''}
+        symptom={currentIntakeData ? (SYMPTOM_LABELS[currentIntakeData.mainSymptom]?.[language] || currentIntakeData.mainSymptom) : ''}
+        isLoading={isCreatingRecovery}
+      />
 
       <BottomNav />
     </div>
