@@ -32,10 +32,10 @@ const translations: Translations = {
   'my.journey': { zh: '打卡足迹', en: 'Check-in Journey' },
   'my.createAlbum': { zh: '生成回忆相册', en: 'Create Memory Album' },
   'my.recentCheckins': { zh: '最近打卡', en: 'Recent Check-ins' },
-  'my.addPetFirst': { zh: '请先添加宠物才能开始打卡', en: 'Add a pet first to start checking in' },
+  'my.addPetFirst': { zh: '请先添加毛孩子才能开始打卡', en: 'Add a pet first to start checking in' },
   'my.alreadyCheckedIn': { zh: '今天已经打卡过了', en: 'Already checked in today' },
   'my.checkInSuccess': { zh: '打卡成功！', en: 'Check-in Complete!' },
-  'my.selectPet': { zh: '请先选择宠物', en: 'Please select a pet first' },
+  'my.selectPet': { zh: '请先选择毛孩子', en: 'Please select a pet first' },
   'my.checkInFailed': { zh: '打卡失败', en: 'Check-in failed' },
   
   // Auth
@@ -52,9 +52,9 @@ const translations: Translations = {
   'auth.createAccount': { zh: '创建账号', en: 'Create Account' },
   
   // Pet
-  'pet.add': { zh: '添加宠物', en: 'Add Pet' },
-  'pet.edit': { zh: '编辑宠物', en: 'Edit Pet' },
-  'pet.name': { zh: '宠物名字', en: 'Pet Name' },
+  'pet.add': { zh: '添加毛孩子', en: 'Add Pet' },
+  'pet.edit': { zh: '编辑毛孩子', en: 'Edit Pet' },
+  'pet.name': { zh: '毛孩子名字', en: 'Pet Name' },
   'pet.species': { zh: '类型', en: 'Species' },
   'pet.dog': { zh: '狗', en: 'Dog' },
   'pet.cat': { zh: '猫', en: 'Cat' },
@@ -65,10 +65,10 @@ const translations: Translations = {
   'pet.birthdate': { zh: '出生日期', en: 'Birthdate' },
   'pet.weight': { zh: '体重 (kg)', en: 'Weight (kg)' },
   'pet.notes': { zh: '备注', en: 'Notes' },
-  'pet.myPets': { zh: '我的宠物', en: 'My Pets' },
-  'pet.profile': { zh: '宠物档案', en: 'Pet Profile' },
-  'pet.noPets': { zh: '还没有添加宠物', en: 'No pets added yet' },
-  'pet.addFirst': { zh: '添加您的第一只宠物', en: 'Add your first pet' },
+  'pet.myPets': { zh: '我的毛孩子', en: 'My Pets' },
+  'pet.profile': { zh: '毛孩子档案', en: 'Pet Profile' },
+  'pet.noPets': { zh: '还没有添加毛孩子', en: 'No pets added yet' },
+  'pet.addFirst': { zh: '添加您的第一个毛孩子', en: 'Add your first pet' },
   
   // Health
   'health.records': { zh: '健康记录', en: 'Health Records' },
@@ -141,10 +141,10 @@ const translations: Translations = {
   
   // AI Vet
   'aivet.title': { zh: '宠博士', en: 'AI Vet' },
-  'aivet.selectPet': { zh: '选择宠物', en: 'Select pet' },
+  'aivet.selectPet': { zh: '选择毛孩子', en: 'Select pet' },
   'aivet.welcome': { zh: '你好，我是宠博士！', en: "Hi, I'm Pet Doctor!" },
-  'aivet.welcomeDesc': { zh: '描述您宠物的症状，我会帮您评估紧急程度并准备就诊建议。请注意：我不是兽医，无法做出诊断。', en: "Describe your pet's symptoms and I'll help assess urgency and prepare vet visit suggestions. Note: I'm not a veterinarian and cannot diagnose." },
-  'aivet.inputPlaceholder': { zh: '描述宠物的症状...', en: "Describe your pet's symptoms..." },
+  'aivet.welcomeDesc': { zh: '描述您毛孩子的症状，我会帮您评估紧急程度并准备就诊建议。请注意：我不是兽医，无法做出诊断。', en: "Describe your pet's symptoms and I'll help assess urgency and prepare vet visit suggestions. Note: I'm not a veterinarian and cannot diagnose." },
+  'aivet.inputPlaceholder': { zh: '描述毛孩子的症状...', en: "Describe your pet's symptoms..." },
   'aivet.disclaimer': { zh: '仅供参考，不构成医疗建议', en: 'For reference only, not medical advice' },
   
   // Common
