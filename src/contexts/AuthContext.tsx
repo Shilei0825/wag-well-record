@@ -2,15 +2,22 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
+interface BetaUser {
+  userId: string;
+  loggedIn: boolean;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  betaUser: BetaUser | null;
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signInWithMagicLink: (email: string) => Promise<{ error: Error | null }>;
   signInWithPhone: (phone: string) => Promise<{ error: Error | null }>;
   verifyOtp: (phone: string, token: string) => Promise<{ error: Error | null }>;
+  signInBeta: (userId: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -20,6 +27,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [betaUser, setBetaUser] = useState<BetaUser | null>(() => {
+    const stored = localStorage.getItem('betaUser');
+    return stored ? JSON.parse(stored) : null;
+  });
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -84,12 +95,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error };
   };
 
+  const signInBeta = async (userId: string, password: string) => {
+    // Hardcoded beta test credentials
+    if (userId === 'Miduo' && password === '123456') {
+      const beta: BetaUser = { userId, loggedIn: true };
+      localStorage.setItem('betaUser', JSON.stringify(beta));
+      setBetaUser(beta);
+      return { error: null };
+    }
+    return { error: new Error('Invalid User ID or Password') };
+  };
+
   const signOut = async () => {
     await supabase.auth.signOut();
+    localStorage.removeItem('betaUser');
+    setBetaUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signInWithMagicLink, signInWithPhone, verifyOtp, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, betaUser, signUp, signIn, signInWithMagicLink, signInWithPhone, verifyOtp, signInBeta, signOut }}>
       {children}
     </AuthContext.Provider>
   );

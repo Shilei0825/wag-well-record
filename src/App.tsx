@@ -34,7 +34,7 @@ import { FloatingAIVetBubble } from "./components/FloatingAIVetBubble";
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading, betaUser } = useAuth();
 
   if (loading) {
     return (
@@ -44,7 +44,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user) {
+  // Allow access if user is authenticated OR if beta user is logged in
+  if (!user && !betaUser?.loggedIn) {
     return <Navigate to="/" replace />;
   }
 
@@ -52,7 +53,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading, betaUser } = useAuth();
 
   if (loading) {
     return (
@@ -62,7 +63,8 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (user) {
+  // Redirect to dashboard if user is authenticated OR beta user is logged in
+  if (user || betaUser?.loggedIn) {
     return <Navigate to="/dashboard" replace />;
   }
 
