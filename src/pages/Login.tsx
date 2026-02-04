@@ -9,12 +9,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { PageHeader } from '@/components/PageHeader';
 import { PhoneInput } from '@/components/PhoneInput';
 import { toast } from 'sonner';
-import { Mail, Phone, Wand2, Lock } from 'lucide-react';
+import { Mail, Phone, Wand2, Lock, FlaskConical } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
   const { t, language, setLanguage } = useLanguage();
-  const { signIn, signInWithMagicLink, signInWithPhone, verifyOtp } = useAuth();
+  const { signIn, signInWithMagicLink, signInWithPhone, verifyOtp, signInBeta } = useAuth();
   
   // Email login state
   const [email, setEmail] = useState('');
@@ -30,7 +30,27 @@ export default function Login() {
   const [otpSent, setOtpSent] = useState(false);
   const [countdown, setCountdown] = useState(0);
   
+  // Beta testing state
+  const [betaUserId, setBetaUserId] = useState('');
+  const [betaPassword, setBetaPassword] = useState('');
+  
   const [loading, setLoading] = useState(false);
+
+  const handleBetaLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { error } = await signInBeta(betaUserId, betaPassword);
+    
+    if (error) {
+      toast.error(language === 'zh' ? '用户ID或密码错误' : 'Invalid User ID or Password');
+      setLoading(false);
+      return;
+    }
+
+    toast.success(language === 'zh' ? 'Beta 测试登录成功！' : 'Beta test login successful!');
+    navigate('/dashboard');
+  };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -146,8 +166,13 @@ export default function Login() {
 
       <PageHeader title={t('auth.welcome')} showBack />
 
-      <Tabs defaultValue="magic" className="mt-8">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+      <Tabs defaultValue="beta" className="mt-8">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsTrigger value="beta" className="flex items-center gap-1 text-xs sm:text-sm">
+            <FlaskConical className="h-4 w-4" />
+            <span className="hidden sm:inline">Beta</span>
+            <span className="sm:hidden">Beta</span>
+          </TabsTrigger>
           <TabsTrigger value="magic" className="flex items-center gap-1 text-xs sm:text-sm">
             <Wand2 className="h-4 w-4" />
             <span className="hidden sm:inline">{language === 'zh' ? '快捷登录' : 'Magic Link'}</span>
@@ -164,6 +189,60 @@ export default function Login() {
             <span className="sm:hidden">{language === 'zh' ? '手机' : 'SMS'}</span>
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="beta">
+          <form onSubmit={handleBetaLogin} className="space-y-6">
+            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+              <div className="flex items-center gap-2 text-primary mb-2">
+                <FlaskConical className="h-4 w-4" />
+                <span className="font-medium text-sm">
+                  {language === 'zh' ? 'Beta 测试模式' : 'Beta Testing Mode'}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {language === 'zh' 
+                  ? '此登录方式仅供内部测试使用'
+                  : 'This login method is for internal testing only'}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="beta-user-id">
+                {language === 'zh' ? '用户ID' : 'User ID'}
+              </Label>
+              <Input
+                id="beta-user-id"
+                type="text"
+                value={betaUserId}
+                onChange={(e) => setBetaUserId(e.target.value)}
+                required
+                className="input-mobile"
+                placeholder={language === 'zh' ? '输入用户ID' : 'Enter User ID'}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="beta-password">{t('auth.password')}</Label>
+              <Input
+                id="beta-password"
+                type="password"
+                value={betaPassword}
+                onChange={(e) => setBetaPassword(e.target.value)}
+                required
+                className="input-mobile"
+                placeholder="••••••••"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full btn-mobile"
+            >
+              {loading ? t('common.loading') : (language === 'zh' ? 'Beta 登录' : 'Beta Login')}
+            </Button>
+          </form>
+        </TabsContent>
 
         <TabsContent value="magic">
           <form onSubmit={handleMagicLinkSubmit} className="space-y-6">
