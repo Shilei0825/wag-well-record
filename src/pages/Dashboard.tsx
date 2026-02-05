@@ -14,7 +14,7 @@ import { format, isToday, isTomorrow, parseISO } from 'date-fns';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { t, language } = useLanguage();
+  const { t, tWithPet, language } = useLanguage();
   const { data: pets, isLoading: petsLoading } = usePets();
   const { data: reminders } = useReminders();
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
@@ -180,8 +180,8 @@ export default function Dashboard() {
         <div className="card-elevated p-6 text-center">
           <p className="text-muted-foreground text-sm">
             {language === 'zh' 
-              ? '开始记录宠物的健康和花费吧' 
-              : 'Start tracking your pet\'s health and expenses'}
+              ? `开始记录${selectedPet?.name || '毛孩子'}的健康和花费吧` 
+              : `Start tracking ${selectedPet?.name || 'your pet'}'s health and expenses`}
           </p>
         </div>
       </section>

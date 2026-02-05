@@ -143,9 +143,17 @@ const translations: Translations = {
   'aivet.title': { zh: '宠博士', en: 'AI Vet' },
   'aivet.selectPet': { zh: '选择毛孩子', en: 'Select pet' },
   'aivet.welcome': { zh: '你好，我是宠博士！', en: "Hi, I'm Pet Doctor!" },
-  'aivet.welcomeDesc': { zh: '描述您毛孩子的症状，我会帮您评估紧急程度并准备就诊建议。请注意：我不是兽医，无法做出诊断。', en: "Describe your pet's symptoms and I'll help assess urgency and prepare vet visit suggestions. Note: I'm not a veterinarian and cannot diagnose." },
-  'aivet.inputPlaceholder': { zh: '描述毛孩子的症状...', en: "Describe your pet's symptoms..." },
+  'aivet.welcomeDesc': { zh: '描述{petName}的症状，我会帮您评估紧急程度并准备就诊建议。请注意：我不是兽医，无法做出诊断。', en: "Describe {petName}'s symptoms and I'll help assess urgency and prepare vet visit suggestions. Note: I'm not a veterinarian and cannot diagnose." },
+  'aivet.welcomeDescDefault': { zh: '描述您毛孩子的症状，我会帮您评估紧急程度并准备就诊建议。请注意：我不是兽医，无法做出诊断。', en: "Describe your pet's symptoms and I'll help assess urgency and prepare vet visit suggestions. Note: I'm not a veterinarian and cannot diagnose." },
+  'aivet.inputPlaceholder': { zh: '描述{petName}的症状...', en: "Describe {petName}'s symptoms..." },
+  'aivet.inputPlaceholderDefault': { zh: '描述毛孩子的症状...', en: "Describe your pet's symptoms..." },
   'aivet.disclaimer': { zh: '仅供参考，不构成医疗建议', en: 'For reference only, not medical advice' },
+  'aivet.selectPetFirst': { zh: '请先选择要咨询的毛孩子', en: 'Please select a pet first' },
+  'aivet.selectPetPrompt': { zh: '请先选择毛孩子', en: 'Please select a pet first' },
+  
+  // Recovery
+  'recovery.started': { zh: '{petName}的恢复观察已开启', en: "Recovery follow-up started for {petName}" },
+  'recovery.startedDefault': { zh: '恢复观察已开启', en: 'Recovery follow-up started' },
   
   // Common
   'common.save': { zh: '保存', en: 'Save' },
@@ -173,6 +181,8 @@ interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
+  tWithPet: (key: string, petName?: string | null) => string;
+  petLabel: (petName?: string | null) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -201,8 +211,42 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return translation[language];
   };
 
+  // Get pet-aware label: use pet name if provided, otherwise "毛孩子" / "your pet"
+  const petLabel = (petName?: string | null): string => {
+    if (petName) return petName;
+    return language === 'zh' ? '毛孩子' : 'your pet';
+  };
+
+  // Translate with pet name substitution
+  // Looks for {petName} placeholder in translation and replaces it
+  // If no pet name provided, uses the "Default" version of the key or falls back to generic
+  const tWithPet = (key: string, petName?: string | null): string => {
+    if (!petName) {
+      // Try to get the default version first
+      const defaultKey = `${key}Default`;
+      const defaultTranslation = translations[defaultKey];
+      if (defaultTranslation) {
+        return defaultTranslation[language];
+      }
+      // Fall back to regular translation with generic replacement
+      const translation = translations[key];
+      if (!translation) {
+        console.warn(`Missing translation: ${key}`);
+        return key;
+      }
+      return translation[language].replace('{petName}', petLabel());
+    }
+    
+    const translation = translations[key];
+    if (!translation) {
+      console.warn(`Missing translation: ${key}`);
+      return key;
+    }
+    return translation[language].replace('{petName}', petName);
+  };
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t, tWithPet, petLabel }}>
       {children}
     </LanguageContext.Provider>
   );

@@ -70,7 +70,7 @@ type ViewMode = 'intake' | 'chat';
 
 export default function AIVet() {
   const navigate = useNavigate();
-  const { t, language } = useLanguage();
+  const { t, tWithPet, language } = useLanguage();
   const { data: pets } = usePets();
   const createConsultation = useCreateConsultation();
   const createRecoveryPlan = useCreateRecoveryPlan();
@@ -149,8 +149,11 @@ export default function AIVet() {
       .map(s => SYMPTOM_LABELS[s]?.[language] || s)
       .join(', ');
 
+    // Use pet name or fallback
+    const petNameForMessage = selectedPet?.name || (language === 'zh' ? '我的毛孩子' : 'My pet');
+    
     if (language === 'zh') {
-      let msg = `我的宠物出现了以下症状：\n\n`;
+      let msg = `${petNameForMessage}出现了以下症状：\n\n`;
       msg += `**主要症状：** ${mainSymptomLabel}\n`;
       msg += `**持续时间：** ${durationLabel}\n`;
       msg += `**严重程度：** ${severityLabel}\n`;
@@ -162,7 +165,7 @@ export default function AIVet() {
       }
       return msg;
     } else {
-      let msg = `My pet is experiencing the following symptoms:\n\n`;
+      let msg = `${petNameForMessage} is experiencing the following symptoms:\n\n`;
       msg += `**Main symptom:** ${mainSymptomLabel}\n`;
       msg += `**Duration:** ${durationLabel}\n`;
       msg += `**Severity:** ${severityLabel}\n`;
@@ -260,7 +263,7 @@ export default function AIVet() {
         duration_days: 3,
       });
       
-      toast.success(language === 'zh' ? '恢复观察已开启' : 'Recovery follow-up started');
+      toast.success(tWithPet('recovery.started', selectedPet?.name));
       setShowRecoveryModal(false);
     } catch (error) {
       console.error('Failed to create recovery plan:', error);
@@ -455,7 +458,7 @@ export default function AIVet() {
           </Select>
           {!selectedPetId && (
             <p className="text-xs text-muted-foreground mt-1">
-              {language === 'zh' ? '请先选择要咨询的宠物' : 'Please select a pet first'}
+              {t('aivet.selectPetFirst')}
             </p>
           )}
         </div>
@@ -465,11 +468,11 @@ export default function AIVet() {
           <div className="flex-1 p-8 text-center">
             <Stethoscope className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
             <h3 className="font-medium mb-2">
-              {language === 'zh' ? '请先选择宠物' : 'Please select a pet first'}
+              {t('aivet.selectPetPrompt')}
             </h3>
             <p className="text-sm text-muted-foreground">
               {language === 'zh' 
-                ? '选择宠物后，宠博士可以根据宠物的信息提供更准确的建议' 
+                ? '选择毛孩子后，宠博士可以根据毛孩子的信息提供更准确的建议' 
                 : 'After selecting a pet, AI Vet can provide more accurate suggestions based on pet info'}
             </p>
           </div>
@@ -582,7 +585,7 @@ export default function AIVet() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={t('aivet.inputPlaceholder')}
+                  placeholder={tWithPet('aivet.inputPlaceholder', selectedPet?.name)}
                   className="min-h-[44px] max-h-32 resize-none"
                   rows={1}
                 />
